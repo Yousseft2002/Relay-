@@ -23,6 +23,9 @@ No dependencies beyond Python 3.11+, git and the GitHub CLI. MIT licensed.
 repo (`examples/relay-sandbox`) from install to a feature planned, built, reviewed and
 merged by agents, then on to a real project.
 
+**Improving Relay with Claude Code?** Paste the prompts in
+[docs/claude-code-playbook.md](docs/claude-code-playbook.md), one phase at a time.
+
 ## What each tool does by default
 
 | Role | Default agent | Why |
