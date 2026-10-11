@@ -1,0 +1,40 @@
+# relay.toml for the practice repo. Change `repo` to your GitHub username.
+# Tuned for a first test: everything builds locally, one job per step, low caps.
+
+[project]
+repo = "YOUR-GITHUB-USERNAME/relay-sandbox"
+base_branch = "main"
+worktree_root = "../relay-worktrees"
+autonomy = "auto"
+spec_approval = false
+require_ci = true
+auto_merge_sizes = ["S"]
+auto_merge_max_risk = "low"
+max_rework_rounds = 2
+max_jobs_per_tick = 1
+
+[routing]
+planner = "claude"
+# Stage 1 (now): everything local. Stage 2: change S to "copilot-cloud".
+by_size = { S = "codex", M = "codex", L = "claude" }
+fallback = ["codex", "claude"]
+reviewers = { claude = "codex", codex = "claude", copilot = "claude", copilot-cloud = "codex" }
+
+[agents.claude]
+kind = "claude"
+timeout_min = 20
+max_runs_per_day = 8
+max_usd_per_day = 5.0
+
+[agents.codex]
+kind = "codex"
+timeout_min = 20
+max_runs_per_day = 10
+
+[agents.copilot]
+kind = "copilot"
+enabled = false          # turn on if you installed Copilot CLI
+
+[agents.copilot-cloud]
+kind = "copilot-cloud"
+max_runs_per_day = 5

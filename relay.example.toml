@@ -1,0 +1,53 @@
+# relay.toml — copy this file to the root of a project repo as relay.toml and edit it.
+# Relay keeps its local state in .relay/state/ (git-ignored by `relay init`).
+
+[project]
+repo = "your-github-user/materialos"   # owner/name on GitHub
+base_branch = "main"
+worktree_root = "../relay-worktrees"    # one folder per task, next to your repo
+
+# "auto": agents build, review and auto-merge small low-risk PRs; bigger ones wait for you.
+# "gated": agents build and review; you merge everything.
+autonomy = "auto"
+spec_approval = false        # true = new tasks wait for `relay approve <issue>` before building
+require_ci = true            # never auto-merge without green CI (keep this on)
+auto_merge_sizes = ["S"]     # sizes that may merge without you
+auto_merge_max_risk = "low"  # reviewer's risk rating must be at or below this
+max_rework_rounds = 2        # after this many failed reviews, it's yours
+max_jobs_per_tick = 2        # agent runs per step per tick (keeps a night run bounded)
+
+[routing]
+planner = "claude"                      # writes specs and splits work into tasks
+# Who builds by task size. Change freely; this is where you balance your token budgets.
+by_size = { S = "copilot-cloud", M = "codex", L = "claude" }
+# Order to try when the preferred agent is over budget or disabled.
+fallback = ["codex", "claude", "copilot"]
+# Reviewer for each builder. Must be a different vendor (relay refuses same-vendor review).
+reviewers = { claude = "codex", codex = "claude", copilot = "claude", copilot-cloud = "codex" }
+
+# ---- agents ------------------------------------------------------------------------
+# command: the CLI on your PATH. *_args override the defaults in relay/config.py.
+# Prompts are always sent on stdin.
+
+[agents.claude]
+kind = "claude"
+timeout_min = 45
+max_runs_per_day = 15
+max_usd_per_day = 20.0       # Claude Code reports an estimated cost per run
+# Default build args use permission mode "auto". If your plan doesn't offer it, use:
+# build_args = ["-p", "--output-format", "json", "--permission-mode", "acceptEdits",
+#               "--allowedTools", "Bash(npm *),Bash(npx *),Bash(pnpm *),Bash(python *)"]
+
+[agents.codex]
+kind = "codex"
+timeout_min = 45
+max_runs_per_day = 25        # Codex reports tokens, not dollars
+
+[agents.copilot]             # GitHub Copilot CLI, run locally
+kind = "copilot"
+timeout_min = 30
+max_runs_per_day = 20
+
+[agents.copilot-cloud]       # GitHub's cloud coding agent: runs on GitHub, opens its own PR
+kind = "copilot-cloud"
+max_runs_per_day = 20        # each session uses one premium request + Actions minutes
