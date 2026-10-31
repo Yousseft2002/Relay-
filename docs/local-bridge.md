@@ -81,6 +81,17 @@ to your Python executable and bridge_server.py. Keep the tunnel client running.
 Create/associate the tunnel with the intended account/workspace and verify health
 through the client before creating the ChatGPT connection.
 
+The bridge accepts legacy `initialize` and modern `server/discover` handshakes.
+Discovery reports capabilities; the client still calls `tools/list` to obtain
+the action definitions. Neither handshake nor listing tools calls a provider.
+With `--allow-rewrite`, that list contains five tools, including
+`relay_start_rewrite`; otherwise it contains four. After changing this flag,
+restart the bridge and refresh the ChatGPT connection's tool metadata. Check the
+plugin's action list and enable the new action if it is initially disabled.
+`relay_health` reports `server_version` and `advertised_tools` to compare with
+that action list. Provider readiness alone does not show whether ChatGPT has
+discovered a tool.
+
 In Create MCP App, use Name Relay and Connection Tunnel. This stdio server does not
 implement OAuth. For a private tunnel-only prototype, use the supported no-server-
 authentication option, with access restricted by the tunnel/account permissions.
@@ -107,5 +118,6 @@ remain separate work. Store the database in a private OS-account directory.
 
 - [OpenAI Secure MCP Tunnel](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)
 - [ChatGPT custom MCP setup](https://developers.openai.com/api/docs/guides/custom-mcp-server)
+- [Tunnel client discovery compatibility fixture](https://github.com/openai/tunnel-client/blob/v0.0.19/testsupport/mockmcpserver/stdio_server.sh)
 - [Claude programmatic interface](https://code.claude.com/docs/en/headless)
 - [Claude CLI options](https://code.claude.com/docs/en/cli-reference)

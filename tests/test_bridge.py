@@ -18,6 +18,11 @@ PAYLOAD = {"objective": "Improve a retry task", "research": "Retries need stable
 REPORT = {"critique": ["Specify idempotency"], "revised_prompt": "Use stable keys.",
           "open_questions": [], "limitations": ["Sources supplied; not fetched."]}
 ROOT = Path(__file__).resolve().parents[1]
+MODERN_META = {"_meta": {
+    "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+    "io.modelcontextprotocol/clientInfo": {"name": "bridge-test-client", "version": "1.0.0"},
+    "io.modelcontextprotocol/clientCapabilities": {},
+}}
 
 
 class BridgeTests(unittest.TestCase):
@@ -39,6 +44,104 @@ class BridgeTests(unittest.TestCase):
         self.assertFalse(annotations["relay_submit_research"])
         with self.assertRaises(ValueError):
             self.bridge.call("relay_start_rewrite", {"job_id": "0" * 32})
+
+    def test_modern_discovery_then_list_preserves_tool_gating_without_provider_calls(self):
+        for enabled, count in ((False, 4), (True, 5)):
+            with self.subTest(rewrite_enabled=enabled):
+                bridge = Bridge(self.root, allow_rewrite=enabled)
+                requests = [
+                    {"jsonrpc": "2.0", "id": 1, "method": "server/discover", "params": MODERN_META},
+                    {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": MODERN_META},
+                    {"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                     "params": {**MODERN_META, "name": "relay_health", "arguments": {}}},
+                ]
+                output = io.StringIO()
+                with patch("relay.bridge.capabilities", return_value={"ready": False}) as local_readiness, \
+                        patch("relay.bridge.subprocess.Popen") as worker:
+                    serve(bridge, io.StringIO("\n".join(json.dumps(item) for item in requests) + "\n"), output)
+                local_readiness.assert_called_once_with()
+                worker.assert_not_called()
+                discovery, listing, health_reply = [json.loads(line)["result"]
+                                                    for line in output.getvalue().splitlines()]
+                self.assertEqual(discovery["resultType"], "complete")
+                self.assertEqual(discovery["supportedVersions"],
+                                 ["2026-07-28", "2025-06-18", "2025-03-26", "2024-11-05"])
+                self.assertEqual(discovery["capabilities"], {"tools": {}})
+                self.assertEqual(discovery["_meta"]["io.modelcontextprotocol/serverInfo"],
+                                 {"name": "relay-research-bridge", "version": "0.1.1"})
+                self.assertIn("untrusted", discovery["instructions"])
+                self.assertNotIn("serverInfo", discovery)
+                self.assertNotIn("tools", discovery)
+                self.assertEqual(len(listing["tools"]), count)
+                self.assertEqual("relay_start_rewrite" in {tool["name"] for tool in listing["tools"]}, enabled)
+                health = health_reply["structuredContent"]
+                self.assertEqual(health["server_version"],
+                                 discovery["_meta"]["io.modelcontextprotocol/serverInfo"]["version"])
+                self.assertEqual(health["advertised_tools"], [tool["name"] for tool in listing["tools"]])
+                self.assertEqual(health["rewrite_enabled"], enabled)
+
+    def test_legacy_initialization_keeps_negotiation_and_identity(self):
+        for requested, negotiated in (("2025-06-18", "2025-06-18"),
+                                      ("2024-11-05", "2024-11-05"),
+                                      ("made-up", "2025-06-18")):
+            with self.subTest(requested=requested):
+                result = handle(self.bridge, {"jsonrpc": "2.0", "id": 1, "method": "initialize",
+                                              "params": {"protocolVersion": requested}})["result"]
+                self.assertEqual(result["protocolVersion"], negotiated)
+                self.assertEqual(result["capabilities"], {"tools": {}})
+                self.assertEqual(result["serverInfo"],
+                                 {"name": "relay-research-bridge", "version": "0.1.1"})
+                self.assertNotIn("supportedVersions", result)
+                discovery = handle(self.bridge, {"jsonrpc": "2.0", "id": 2,
+                                                 "method": "server/discover", "params": MODERN_META})
+                self.assertEqual(result["instructions"], discovery["result"]["instructions"])
+
+    def test_discovery_metadata_validation_and_version_negotiation(self):
+        for params in (None, [], {}, {"_meta": []}, {"_meta": {}},
+                       {"_meta": {"io.modelcontextprotocol/protocolVersion": "2026-07-28"}},
+                       {"_meta": {"io.modelcontextprotocol/protocolVersion": " ",
+                                  "io.modelcontextprotocol/clientCapabilities": {}}},
+                       {"_meta": {**MODERN_META["_meta"], "io.modelcontextprotocol/clientCapabilities": []}},
+                       {"_meta": {**MODERN_META["_meta"], "io.modelcontextprotocol/clientInfo": None}},
+                       {"_meta": {**MODERN_META["_meta"], "io.modelcontextprotocol/clientInfo": {"name": "client"}}}):
+            with self.subTest(params=params):
+                reply = handle(self.bridge, {"jsonrpc": "2.0", "id": 1,
+                                             "method": "server/discover", "params": params})
+                self.assertEqual(reply["error"]["code"], -32602)
+        minimal = {"_meta": {"io.modelcontextprotocol/protocolVersion": "2099-01-01",
+                             "io.modelcontextprotocol/clientCapabilities": {}}}
+        reply = handle(self.bridge, {"jsonrpc": "2.0", "id": 2,
+                                     "method": "server/discover", "params": minimal})
+        self.assertIn("2026-07-28", reply["result"]["supportedVersions"])
+
+    def test_source_launcher_discovers_modern_tools_without_legacy_initialize(self):
+        messages = [{"jsonrpc": "2.0", "id": 1, "method": "server/discover", "params": MODERN_META},
+                    {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": MODERN_META},
+                    {"jsonrpc": "2.0", "id": 3, "method": "tools/call",
+                     "params": {**MODERN_META, "name": "relay_health", "arguments": {}}}]
+        # Keep provider credentials out of this protocol-only subprocess check.
+        env = {key: value for key, value in os.environ.items()
+               if key.upper() in {"PATH", "PATHEXT", "SYSTEMROOT", "WINDIR", "COMSPEC",
+                                  "TEMP", "TMP", "TMPDIR", "HOME", "USERPROFILE"}}
+        for enabled, expected_count in ((False, 4), (True, 5)):
+            with self.subTest(rewrite_enabled=enabled):
+                command = [sys.executable, str(ROOT / "bridge_server.py"),
+                           "--state-dir", str(self.root / ("enabled" if enabled else "disabled"))]
+                if enabled:
+                    command.append("--allow-rewrite")
+                process = subprocess.run(command, cwd=self.root, env=env,
+                                         input="\n".join(json.dumps(item) for item in messages) + "\n",
+                                         text=True, encoding="utf-8", capture_output=True,
+                                         timeout=15, check=True)
+                self.assertEqual(process.stderr, "")
+                discovery, listing, health_reply = [json.loads(line)["result"]
+                                                    for line in process.stdout.splitlines()]
+                self.assertEqual(discovery["resultType"], "complete")
+                self.assertEqual(len(listing["tools"]), expected_count)
+                health = health_reply["structuredContent"]
+                self.assertEqual(health["server_version"], "0.1.1")
+                self.assertEqual(health["advertised_tools"], [tool["name"] for tool in listing["tools"]])
+                self.assertFalse(health["rewrite"]["api_key_configured"])
 
     def test_round_trip_preserves_research_across_restart(self):
         job = self.bridge.call("relay_submit_research", {**PAYLOAD, "request_id": "test-1"})
