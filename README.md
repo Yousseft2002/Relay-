@@ -1,5 +1,10 @@
 # Relay
 
+**Research/prompt connection prototype:** the new private
+[local bridge](docs/local-bridge.md) saves research jobs and can return Claude
+rewrites through stdio MCP. See the guide for setup, tested behavior, and remaining
+live ChatGPT/tunnel/provider verification. Start with `python bridge_server.py health`.
+
 Relay turns Claude Code, Codex and GitHub Copilot into one development team. GitHub
 Issues are the task board, pull requests are the hand-off point, and every change is
 built by one tool and reviewed by a tool from a different company. You approve the plan

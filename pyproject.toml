@@ -12,6 +12,7 @@ dependencies = []
 
 [project.scripts]
 relay = "relay.cli:main"
+relay-bridge = "relay.bridge:main"
 
 [tool.setuptools]
 packages = ["relay"]
