@@ -40,7 +40,8 @@ class RewriteTests(unittest.TestCase):
 
     def test_passes_payload_only_on_stdin_without_tools_or_project_context(self):
         payload = {"draft_prompt": "PRIVATE --mcp-config evil.json $(echo bad)",
-                   "command": "evil", "model": "evil", "env": {"GH_TOKEN": "evil"}}
+                   "command": "evil", "model": "evil",
+                   "env": {"GH_TOKEN": "evil", "DISABLE_UPDATES": "0"}}
 
         def inspect(args, **kwargs):
             self.assertEqual(json.loads(kwargs["input"]), payload)
@@ -63,6 +64,7 @@ class RewriteTests(unittest.TestCase):
             self.assertEqual(list(work.iterdir()), [])
             self.assertNotEqual(work, Path.cwd())
             self.assertTrue(Path(kwargs["env"]["CLAUDE_CONFIG_DIR"]).is_dir())
+            self.assertEqual(kwargs["env"]["DISABLE_UPDATES"], "1")
             return completed()
 
         self.run_mock.side_effect = inspect
@@ -76,6 +78,7 @@ class RewriteTests(unittest.TestCase):
                            "ANTHROPIC_AUTH_TOKEN": "private-auth", "NODE_OPTIONS": "--require evil",
                            "CLAUDE_CODE_OAUTH_TOKEN": "private-oauth", "CLAUDE_CONFIG_DIR": "evil",
                            "ANTHROPIC_BASE_URL": "https://evil.invalid", "MCP_TIMEOUT": "1",
+                           "DISABLE_UPDATES": "0",
                            "RELAY_CLAUDE_COMMAND": "trusted-cli", "RELAY_CLAUDE_MODEL": "sonnet"})
         result = run_rewrite({"prompt": "draft"}, timeout_s=30)
         self.which_mock.assert_called_once_with("trusted-cli")
@@ -86,7 +89,9 @@ class RewriteTests(unittest.TestCase):
         self.assertEqual(env["ANTHROPIC_API_KEY"], SECRET)
         self.assertEqual(env["PATH"], "test-path")
         self.assertEqual(env["USERPROFILE"], "test-home")
-        self.assertEqual(set(env), {"ANTHROPIC_API_KEY", "PATH", "USERPROFILE", "CLAUDE_CONFIG_DIR"})
+        self.assertEqual(set(env), {"ANTHROPIC_API_KEY", "PATH", "USERPROFILE",
+                                    "CLAUDE_CONFIG_DIR", "DISABLE_UPDATES"})
+        self.assertEqual(env["DISABLE_UPDATES"], "1")
         self.assertNotEqual(env["CLAUDE_CONFIG_DIR"], "evil")
 
     def test_reports_prerequisites_without_calling_provider(self):

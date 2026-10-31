@@ -182,6 +182,8 @@ def run_rewrite(payload: dict, timeout_s: int = 180) -> dict:
         args.extend(["--model", model])
     env = {name: value for name, value in os.environ.items() if name.upper() in _SYSTEM_ENV}
     env["ANTHROPIC_API_KEY"] = key
+    # Keep the selected binary in place; updates require a separate operator action.
+    env["DISABLE_UPDATES"] = "1"
     try:
         with tempfile.TemporaryDirectory(prefix="relay-rewrite-", ignore_cleanup_errors=True) as tmp:
             root = Path(tmp)
