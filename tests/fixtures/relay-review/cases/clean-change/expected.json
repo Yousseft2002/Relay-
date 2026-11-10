@@ -1,0 +1,12 @@
+{
+  "description": "A small, correct, tested helper. Checks for false positives.",
+  "intent": "Add slugify(value, max_length=60) for URL slugs, with tests.",
+  "author": "claude-code",
+  "must_find": [],
+  "max_severity": "LOW",
+  "verdict": "approve",
+  "bundle": {
+    "excluded": [],
+    "redacted": []
+  }
+}

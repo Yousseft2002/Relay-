@@ -1,0 +1,21 @@
+{
+  "description": "Download handler joins a request parameter into a filesystem path.",
+  "intent": "Let users download files from the uploads folder by name.",
+  "author": "claude-code",
+  "must_find": [
+    {
+      "file": "files/server.py",
+      "contains": "with open(UPLOAD_DIR / name",
+      "min_severity": "HIGH",
+      "keywords": [
+        "travers",
+        "path"
+      ]
+    }
+  ],
+  "verdict_not": "approve",
+  "bundle": {
+    "excluded": [],
+    "redacted": []
+  }
+}

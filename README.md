@@ -26,6 +26,12 @@ merged by agents, then on to a real project.
 **Improving Relay with Claude Code?** Paste the prompts in
 [docs/claude-code-playbook.md](docs/claude-code-playbook.md), one phase at a time.
 
+**Just want the review?** [skills/relay-review](skills/relay-review/README.md) is a standalone
+Agent Skill (Claude Code, Codex, Copilot) that runs an evidence-based code review, hands it
+to an agent from another vendor if you authorize that, and labels it honestly as a
+self-review otherwise. No Relay install needed. Maintainer notes:
+[docs/relay-review.md](docs/relay-review.md).
+
 ## What each tool does by default
 
 | Role | Default agent | Why |
@@ -134,6 +140,7 @@ Use one option, not both.
 | `night-shift.ps1` | Windows scheduled task for overnight ticks |
 | `docs/first-run.md` | Step-by-step first run and troubleshooting |
 | `examples/relay-sandbox` | Practice project with CI, for testing Relay safely |
+| `skills/relay-review/` | Standalone review skill (SKILL.md package); fixtures in `tests/fixtures/relay-review/` |
 | `AGENTS.md` | Rules for agents working on Relay itself (not the template) |
 | `tests/` | `py -m unittest discover -s tests -t .` (CI runs Windows + Linux) |
 

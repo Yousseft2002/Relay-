@@ -1,0 +1,36 @@
+# relay-review.toml: who can do what. Copy to your repo root and edit.
+# Nothing here is built into the skill: rename agents, add new ones, or move roles freely.
+# Independence is judged by vendor: a reviewer must not share the author's vendor.
+
+[agents.claude-code]
+vendor = "anthropic"
+capabilities = ["lead", "implement", "review", "security-review"]
+model_family = "claude"
+
+[agents.copilot]
+vendor = "github"
+capabilities = ["implement", "review", "security-review"]
+# Copilot lets you pick the model. If you pick the author's model family, set it here
+# so reports note that the agents are independent but the model isn't.
+model_family = "varies"
+invoke = "manual"            # you start Copilot yourself with the handoff file
+
+[agents.codex]
+vendor = "openai"
+capabilities = ["lead", "implement", "review", "security-review"]
+model_family = "gpt"
+available_from = 2026-10-31  # skipped before this date
+note = "temporarily unavailable"
+
+[assign]
+# First available agent with the capability wins. Reorder to reassign.
+lead = ["claude-code", "codex"]
+implement = ["claude-code", "codex"]
+review = ["copilot", "codex", "claude-code"]
+
+# Optional: let the lead start a reviewer from the shell. The lead shows this command
+# and runs it only after you say yes. Use the exact command and flags from that tool's
+# own documentation; relay-review doesn't supply any.
+# [agents.copilot]
+# invoke = "command"
+# command = ["<reviewer-cli>", "<flags from its docs>"]

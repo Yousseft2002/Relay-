@@ -1,0 +1,21 @@
+{
+  "description": "New search endpoint builds SQL from the q query parameter.",
+  "intent": "Add GET /users?q= to search users by name prefix.",
+  "author": "claude-code",
+  "must_find": [
+    {
+      "file": "app/users.py",
+      "contains": "f\"SELECT id, name FROM users WHERE name LIKE",
+      "min_severity": "HIGH",
+      "keywords": [
+        "inject",
+        "sql"
+      ]
+    }
+  ],
+  "verdict_not": "approve",
+  "bundle": {
+    "excluded": [],
+    "redacted": []
+  }
+}
