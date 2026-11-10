@@ -36,6 +36,7 @@ low-risk PRs auto-merge. It's a small CLI plus an MCP server.
 | `relay/smoke.py` | `relay smoke`: check each agent CLI runs with relay's flags |
 | `relay/mcp_server.py` | Minimal stdio MCP server for StarNet or any MCP client |
 | `relay/templates/` | Prompts (plan, build, review, handoff) |
+| `skills/relay-review/` | Standalone review skill. Ships as-is: no imports from `relay/`, no network, no fixtures inside |
 | `tests/` | Unit tests + end-to-end loop with a real git repo and a fake GitHub |
 
 ## Design rules

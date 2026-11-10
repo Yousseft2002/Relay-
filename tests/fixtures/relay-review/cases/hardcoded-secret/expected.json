@@ -1,0 +1,25 @@
+{
+  "description": "A credential is hardcoded in source (the value is a fixture placeholder).",
+  "intent": "Make local billing tests easier to run.",
+  "author": "claude-code",
+  "must_find": [
+    {
+      "file": "billing/client.py",
+      "contains": "PAYMENT_API_KEY = \"",
+      "min_severity": "HIGH",
+      "keywords": [
+        "secret",
+        "credential",
+        "key",
+        "hardcod"
+      ]
+    }
+  ],
+  "verdict_not": "approve",
+  "bundle": {
+    "excluded": [],
+    "redacted": [
+      "billing/client.py"
+    ]
+  }
+}

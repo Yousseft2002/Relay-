@@ -1,9 +1,21 @@
 # Relay
 
+Relay's first marketplace release is being developed as **Relay — Independent AI
+Code Review**: a second vendor reviews an AI-built GitHub pull request and returns
+actionable findings, suggested fixes, and explicit coverage limits for a human merge
+decision.
+
+Read the [product definition and review report contract](docs/independent-code-review.md)
+for the intended buyer experience and release criteria. This is a planned offer, not
+a live marketplace release. The current prototype and its known limits are described
+below.
+
 **Research/prompt connection prototype:** the new private
 [local bridge](docs/local-bridge.md) saves research jobs and can return Claude
 rewrites through stdio MCP. See the guide for setup, tested behavior, and remaining
 live ChatGPT/tunnel/provider verification. Start with `python bridge_server.py health`.
+
+## Existing orchestration prototype
 
 Relay turns Claude Code, Codex and GitHub Copilot into one development team. GitHub
 Issues are the task board, pull requests are the hand-off point, and every change is
@@ -30,6 +42,12 @@ merged by agents, then on to a real project.
 
 **Improving Relay with Claude Code?** Paste the prompts in
 [docs/claude-code-playbook.md](docs/claude-code-playbook.md), one phase at a time.
+
+**Just want the review?** [skills/relay-review](skills/relay-review/README.md) is a standalone
+Agent Skill (Claude Code, Codex, Copilot) that runs an evidence-based code review, hands it
+to an agent from another vendor if you authorize that, and labels it honestly as a
+self-review otherwise. No Relay install needed. Maintainer notes:
+[docs/relay-review.md](docs/relay-review.md).
 
 ## What each tool does by default
 
@@ -139,6 +157,7 @@ Use one option, not both.
 | `night-shift.ps1` | Windows scheduled task for overnight ticks |
 | `docs/first-run.md` | Step-by-step first run and troubleshooting |
 | `examples/relay-sandbox` | Practice project with CI, for testing Relay safely |
+| `skills/relay-review/` | Standalone review skill (SKILL.md package); fixtures in `tests/fixtures/relay-review/` |
 | `AGENTS.md` | Rules for agents working on Relay itself (not the template) |
 | `tests/` | `py -m unittest discover -s tests -t .` (CI runs Windows + Linux) |
 
