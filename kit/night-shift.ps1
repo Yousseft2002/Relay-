@@ -3,7 +3,7 @@
   Works in Windows PowerShell 5.1 and PowerShell 7.
 
   Example:
-    powershell -ExecutionPolicy Bypass -File .\night-shift.ps1 -RepoDir "C:\code\materialos"
+    powershell -ExecutionPolicy Bypass -File .\kit\night-shift.ps1 -RepoDir "C:\code\materialos"
 
   Remove it later with:
     Unregister-ScheduledTask -TaskName "Relay Night Shift" -Confirm:$false

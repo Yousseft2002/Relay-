@@ -5,13 +5,13 @@ Code Review**: a second vendor reviews an AI-built GitHub pull request and retur
 actionable findings, suggested fixes, and explicit coverage limits for a human merge
 decision.
 
-Read the [product definition and review report contract](docs/independent-code-review.md)
+Read the [product definition and review report contract](docs/product/independent-code-review.md)
 for the intended buyer experience and release criteria. This is a planned offer, not
 a live marketplace release. The current prototype and its known limits are described
 below.
 
 **Research/prompt connection prototype:** the new private
-[local bridge](docs/local-bridge.md) saves research jobs and can return Claude
+[local bridge](docs/guides/local-bridge.md) saves research jobs and can return Claude
 rewrites through stdio MCP. See the guide for setup, tested behavior, and remaining
 live ChatGPT/tunnel/provider verification. Start with `python bridge_server.py health`.
 
@@ -36,18 +36,18 @@ idea -> relay plan -> spec issue + task issues
 
 No dependencies beyond Python 3.11+, git and the GitHub CLI. MIT licensed.
 
-**New here? Follow [docs/first-run.md](docs/first-run.md).** It walks you through a practice
+**New here? Follow [docs/guides/first-run.md](docs/guides/first-run.md).** It walks you through a practice
 repo (`examples/relay-sandbox`) from install to a feature planned, built, reviewed and
 merged by agents, then on to a real project.
 
 **Improving Relay with Claude Code?** Paste the prompts in
-[docs/claude-code-playbook.md](docs/claude-code-playbook.md), one phase at a time.
+[docs/dev/claude-code-playbook.md](docs/dev/claude-code-playbook.md), one phase at a time.
 
 **Just want the review?** [skills/relay-review](skills/relay-review/README.md) is a standalone
 Agent Skill (Claude Code, Codex, Copilot) that runs an evidence-based code review, hands it
 to an agent from another vendor if you authorize that, and labels it honestly as a
 self-review otherwise. No Relay install needed. Maintainer notes:
-[docs/relay-review.md](docs/relay-review.md).
+[docs/product/relay-review.md](docs/product/relay-review.md).
 
 ## What each tool does by default
 
@@ -83,7 +83,7 @@ All of this is set in `relay.toml` (`[routing]`), so you can rebalance as your l
    ```
 4. In your project repo:
    - Copy `relay.example.toml` to `relay.toml` and set `repo = "you/your-repo"`.
-   - Paste `AGENTS.relay.md` into the repo's `AGENTS.md` (all three tools read it).
+   - Paste `kit/AGENTS.team.md` into the repo's `AGENTS.md` (all three tools read it).
    - Run `py -m relay doctor`, `py -m relay smoke` (runs each agent CLI once to check
      sign-in and flags), then `py -m relay init` (creates labels, git-ignores `.relay/state/`).
 5. On GitHub:
@@ -113,13 +113,13 @@ Anything needing you gets the `relay:needs-human` label. Filter GitHub by it eac
 
 Option A, Windows Task Scheduler:
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\night-shift.ps1 -RepoDir "C:\code\materialos"
+powershell -ExecutionPolicy Bypass -File .\kit\night-shift.ps1 -RepoDir "C:\code\materialos"
 ```
 Runs `relay tick` every 30 minutes from 22:00 for 9 hours and logs to
 `.relay\state\night-shift.log`.
 
 Option B, StarNet as the manager: add Relay as an MCP connector and use the brief in
-`starnet-manager.md`. StarNet then runs ticks during its Night Shift, plans from your
+`kit/starnet-manager.md`. StarNet then runs ticks during its Night Shift, plans from your
 ideas, and messages you (e.g. on Telegram) when something needs a decision.
 
 Use one option, not both.
@@ -149,16 +149,15 @@ Use one option, not both.
 
 | Path | What it is |
 |------|------------|
-| `relay/` | The tool (config, routing, agent adapters, GitHub/git wrappers, workflows, MCP server) |
+| `relay/` | The tool (config, routing, agent adapters, GitHub/git wrappers, workflows, MCP servers) |
 | `relay/templates/` | Build, review, plan and handoff prompts. Override per repo in `.relay/prompts/` |
 | `relay.example.toml` | Annotated config |
-| `AGENTS.relay.md` | Shared rules for all three agents |
-| `starnet-manager.md` | Brief and setup for a StarNet manager agent |
-| `night-shift.ps1` | Windows scheduled task for overnight ticks |
-| `docs/first-run.md` | Step-by-step first run and troubleshooting |
+| `bridge_server.py` | Launcher for the private research bridge ([guide](docs/guides/local-bridge.md)) |
+| `kit/` | Files you copy into your own repo or machine ([kit/README.md](kit/README.md)) |
+| `docs/` | Guides, product docs, maintainer notes and audits ([docs/README.md](docs/README.md)) |
 | `examples/relay-sandbox` | Practice project with CI, for testing Relay safely |
 | `skills/relay-review/` | Standalone review skill (SKILL.md package); fixtures in `tests/fixtures/relay-review/` |
-| `AGENTS.md` | Rules for agents working on Relay itself (not the template) |
+| `AGENTS.md` | Rules and a map for agents working on Relay itself (not the template) |
 | `tests/` | `py -m unittest discover -s tests -t .` (CI runs Windows + Linux) |
 
 ## Known limits (check these on first run)
@@ -166,7 +165,7 @@ Use one option, not both.
 - Tested with fake agent CLIs and a simulated GitHub, plus one live run where the real
   Claude Code CLI planned, built and reviewed a feature in a real git repo. Codex,
   Copilot and real GitHub haven't been exercised yet: run your first ticks by hand
-  (docs/first-run.md) and read the PRs before you schedule anything.
+  (docs/guides/first-run.md) and read the PRs before you schedule anything.
 - Claude Code's default build mode is `--permission-mode auto`. If your plan doesn't
   offer auto mode, use the `acceptEdits` alternative shown in `relay.example.toml`.
 - Cloud-agent PRs are matched to issues by "Fixes #n" in the PR body. Relay asks the
@@ -174,4 +173,4 @@ Use one option, not both.
   yourself.
 - Assigning Claude or Codex as *GitHub* agents (Agent HQ) is done in GitHub's UI; Relay
   runs Claude Code and Codex locally instead, which uses your own subscriptions.
-- `night-shift.ps1` hasn't been run on a real Windows machine yet.
+- `kit/night-shift.ps1` hasn't been run on a real Windows machine yet.

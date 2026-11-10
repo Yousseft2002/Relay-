@@ -3,7 +3,7 @@
 `skills/relay-review/` is "Relay - Independent AI Code Review": a portable Agent Skill
 (`SKILL.md`) that brings Relay's core rule, that every change is reviewed by a different
 vendor than the one that built it, to any agent, without the Relay CLI. Buyers' docs are in
-[skills/relay-review/README.md](../skills/relay-review/README.md). This page is for maintainers.
+[skills/relay-review/README.md](../../skills/relay-review/README.md). This page is for maintainers.
 
 ## How it fits Relay
 
@@ -59,7 +59,7 @@ py -m tests.relay_review_eval grade prompt-injection C:\tmp\rr-case\.relay-revie
 
 `grade` checks that required findings were found at the right lines with at least the
 expected severity, that clean code didn't get false positives, the verdict, and
-`check-report`. Results go in [test-log.md](test-log.md).
+`check-report`. Results go in [test-log.md](../dev/test-log.md).
 
 ## Agensi packaging checklist (don't zip or submit yet)
 

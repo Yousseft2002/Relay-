@@ -1,7 +1,7 @@
 # Live test log
 
-One row per runbook step (docs/first-run.md). Claude Code fills this in during phase 1 of
-docs/claude-code-playbook.md.
+One row per runbook step (docs/guides/first-run.md). Claude Code fills this in during phase 1 of
+docs/dev/claude-code-playbook.md.
 
 | Date | Step | Command | Expected | Actual | Result | Fix |
 | --- | --- | --- | --- | --- | --- | --- |
