@@ -47,12 +47,12 @@ reviewable.
 
 ## Phase 1 — Live test on my machine
 
-> Walk me through docs/first-run.md one step at a time on this Windows machine. Run the
+> Walk me through docs/guides/first-run.md one step at a time on this Windows machine. Run the
 > commands yourself where you can; tell me when I need to do something (sign-ins, GitHub
 > settings). Stop after each step, show me the output, and tell me whether it matches what
 > the runbook expects.
 >
-> Keep a log in docs/test-log.md: date, step, command, expected, actual, pass/fail, and
+> Keep a log in docs/dev/test-log.md: date, step, command, expected, actual, pass/fail, and
 > the fix if any. Use my GitHub username Yousseft2002 and create the practice repo as
 > Yousseft2002/relay-sandbox.
 >
@@ -60,10 +60,10 @@ reviewable.
 > failing test that reproduces it, fix it, run the full test suite, and add a row to the
 > log. Batch the fixes into one PR on the Relay repo at the end of the session.
 >
-> Don't run night-shift.ps1 or connect StarNet yet. Stop after step 10 of the runbook.
+> Don't run kit/night-shift.ps1 or connect StarNet yet. Stop after step 10 of the runbook.
 
-If you run out of time, say "stop here and summarize where we are in docs/test-log.md".
-Next session: "Read docs/test-log.md and continue the live test from where we stopped."
+If you run out of time, say "stop here and summarize where we are in docs/dev/test-log.md".
+Next session: "Read docs/dev/test-log.md and continue the live test from where we stopped."
 
 ## Phase 2 — Harden it for unattended use
 
@@ -171,5 +171,5 @@ Do these as separate prompts, one PR each, in this order.
   it before editing."
 - **Before you merge an agent PR:** "Review PR #<n> on this repo against AGENTS.md. Run
   the tests on its branch. List blocking issues only."
-- **Check the docs match the code:** "Compare README.md and docs/first-run.md to the
+- **Check the docs match the code:** "Compare README.md and docs/guides/first-run.md to the
   current CLI (`py -m relay --help` and each subcommand). Fix anything out of date."

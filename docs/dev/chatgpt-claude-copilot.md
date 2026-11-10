@@ -62,9 +62,9 @@ ChatGPT workspace policy, tool confirmations and tunnel permission are separate 
 | Review freshness | Review file is keyed by PR number; review context uses original PR body and truncates the diff | Bind artifacts/review to commits; fetch latest handoff; expose incomplete coverage. |
 | Isolation | Worktrees separate files; child processes inherit the host environment | Worktrees are not sandboxes. Restrict stage tools, credentials, startup configuration and filesystem/network access. |
 
-Code evidence: [MCP server](../relay/mcp_server.py),
-[agent adapters](../relay/agents.py), [configuration](../relay/config.py),
-[workflow](../relay/workflows.py), [GitHub adapter](../relay/gh.py).
+Code evidence: [MCP server](../../relay/mcp_server.py),
+[agent adapters](../../relay/agents.py), [configuration](../../relay/config.py),
+[workflow](../../relay/workflows.py), [GitHub adapter](../../relay/gh.py).
 
 ## Provider-specific constraints
 

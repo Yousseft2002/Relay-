@@ -126,7 +126,7 @@ Fictional example for format only; this is not an actual Relay run or benchmark.
 
 ## Current evidence and next implementation
 
-See [the live test log](test-log.md). It records a Claude Code run with simulated
+See [the live test log](../dev/test-log.md). It records a Claude Code run with simulated
 GitHub and historical CI results, not a proven live cross-vendor marketplace workflow.
 
 The next implementation phase binds reviews to commit SHAs and rejects stale

@@ -209,7 +209,7 @@ add the labels `relay:review` and `built-by:copilot-cloud` to the PR yourself.
 
 ```powershell
 cd C:\code\Relay-
-powershell -ExecutionPolicy Bypass -File .\night-shift.ps1 -RepoDir "C:\code\relay-sandbox"
+powershell -ExecutionPolicy Bypass -File .\kit\night-shift.ps1 -RepoDir "C:\code\relay-sandbox"
 ```
 
 Give it a few ready issues (or one `relay plan`) before bed. In the morning, read
@@ -221,7 +221,7 @@ sign-ins.
 ## Step 12 — Move to a real project (MaterialOS)
 
 1. Copy `relay.example.toml` into the MaterialOS repo as `relay.toml` and set `repo`.
-2. Paste `AGENTS.relay.md` into MaterialOS's `AGENTS.md` (under the existing rules).
+2. Paste `kit/AGENTS.team.md` into MaterialOS's `AGENTS.md` (under the existing rules).
 3. Make sure MaterialOS has CI that runs its tests on pull requests.
 4. Start with `autonomy = "gated"` for the first week, so nothing merges without you.
 5. `py -m relay smoke`, `py -m relay init`, then plan one small feature and run ticks by hand.
