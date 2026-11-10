@@ -10,6 +10,11 @@ for the intended buyer experience and release criteria. This is a planned offer,
 a live marketplace release. The current prototype and its known limits are described
 below.
 
+**Research/prompt connection prototype:** the new private
+[local bridge](docs/local-bridge.md) saves research jobs and can return Claude
+rewrites through stdio MCP. See the guide for setup, tested behavior, and remaining
+live ChatGPT/tunnel/provider verification. Start with `python bridge_server.py health`.
+
 ## Existing orchestration prototype
 
 Relay turns Claude Code, Codex and GitHub Copilot into one development team. GitHub
