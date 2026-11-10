@@ -1,5 +1,17 @@
 # Relay
 
+Relay's first marketplace release is being developed as **Relay — Independent AI
+Code Review**: a second vendor reviews an AI-built GitHub pull request and returns
+actionable findings, suggested fixes, and explicit coverage limits for a human merge
+decision.
+
+Read the [product definition and review report contract](docs/independent-code-review.md)
+for the intended buyer experience and release criteria. This is a planned offer, not
+a live marketplace release. The current prototype and its known limits are described
+below.
+
+## Existing orchestration prototype
+
 Relay turns Claude Code, Codex and GitHub Copilot into one development team. GitHub
 Issues are the task board, pull requests are the hand-off point, and every change is
 built by one tool and reviewed by a tool from a different company. You approve the plan
